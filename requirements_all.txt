@@ -1967,6 +1967,9 @@ pylitejet==0.6.2
 # homeassistant.components.litterrobot
 pylitterbot==2023.5.0
 
+# homeassistant.components.mammotion
+pyluba==0.0.27
+
 # homeassistant.components.lutron_caseta
 pylutron-caseta==0.20.0
 
