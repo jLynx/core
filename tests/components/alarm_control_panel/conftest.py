@@ -108,7 +108,7 @@ class MockFlow(ConfigFlow):
 
 
 @pytest.fixture(autouse=True)
-def config_flow_fixture(hass: HomeAssistant) -> Generator[None, None, None]:
+def config_flow_fixture(hass: HomeAssistant) -> Generator[None]:
     """Mock config flow."""
     mock_platform(hass, f"{TEST_DOMAIN}.config_flow")
 
@@ -129,7 +129,7 @@ async def code_arm_required() -> bool:
 
 
 @pytest.fixture(name="supported_features")
-async def lock_supported_features() -> AlarmControlPanelEntityFeature:
+async def alarm_control_panel_supported_features() -> AlarmControlPanelEntityFeature:
     """Return the supported features for the test alarm control panel entity."""
     return (
         AlarmControlPanelEntityFeature.ARM_AWAY
@@ -142,7 +142,7 @@ async def lock_supported_features() -> AlarmControlPanelEntityFeature:
 
 
 @pytest.fixture(name="mock_alarm_control_panel_entity")
-async def setup_lock_platform_test_entity(
+async def setup_alarm_control_panel_platform_test_entity(
     hass: HomeAssistant,
     entity_registry: er.EntityRegistry,
     code_format: CodeFormat | None,
@@ -155,12 +155,11 @@ async def setup_lock_platform_test_entity(
         hass: HomeAssistant, config_entry: ConfigEntry
     ) -> bool:
         """Set up test config entry."""
-        await hass.config_entries.async_forward_entry_setup(
-            config_entry, ALARM_CONTROL_PANEL_DOMAIN
+        await hass.config_entries.async_forward_entry_setups(
+            config_entry, [ALARM_CONTROL_PANEL_DOMAIN]
         )
         return True
 
-    MockPlatform(hass, f"{TEST_DOMAIN}.config_flow")
     mock_integration(
         hass,
         MockModule(

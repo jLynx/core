@@ -48,7 +48,7 @@ FAKE_DHCP_DATA = dhcp.DhcpServiceInfo(
 
 
 @pytest.fixture
-def nest_test_config(request) -> NestTestConfig:
+def nest_test_config() -> NestTestConfig:
     """Fixture with empty configuration and no existing config entry."""
     return TEST_CONFIGFLOW_APP_CREDS
 
@@ -56,7 +56,12 @@ def nest_test_config(request) -> NestTestConfig:
 class OAuthFixture:
     """Simulate the oauth flow used by the config flow."""
 
-    def __init__(self, hass, hass_client_no_auth, aioclient_mock):
+    def __init__(
+        self,
+        hass: HomeAssistant,
+        hass_client_no_auth: ClientSessionGenerator,
+        aioclient_mock: AiohttpClientMocker,
+    ) -> None:
         """Initialize OAuthFixture."""
         self.hass = hass
         self.hass_client = hass_client_no_auth

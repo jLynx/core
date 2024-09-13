@@ -14,7 +14,7 @@ from openai.types.images_response import ImagesResponse
 import pytest
 
 from homeassistant.core import HomeAssistant
-from homeassistant.exceptions import HomeAssistantError
+from homeassistant.exceptions import HomeAssistantError, ServiceValidationError
 from homeassistant.setup import async_setup_component
 
 from tests.common import MockConfigEntry
@@ -58,33 +58,6 @@ from tests.common import MockConfigEntry
                 "size": "1792x1024",
                 "quality": "standard",
                 "style": "natural",
-            },
-        ),
-        (
-            {"prompt": "Picture of a dog", "size": "256"},
-            {
-                "prompt": "Picture of a dog",
-                "size": "1024x1024",
-                "quality": "standard",
-                "style": "vivid",
-            },
-        ),
-        (
-            {"prompt": "Picture of a dog", "size": "512"},
-            {
-                "prompt": "Picture of a dog",
-                "size": "1024x1024",
-                "quality": "standard",
-                "style": "vivid",
-            },
-        ),
-        (
-            {"prompt": "Picture of a dog", "size": "1024"},
-            {
-                "prompt": "Picture of a dog",
-                "size": "1024x1024",
-                "quality": "standard",
-                "style": "vivid",
             },
         ),
     ],
@@ -155,6 +128,28 @@ async def test_generate_image_service_error(
                 "config_entry": mock_config_entry.entry_id,
                 "prompt": "Image of an epic fail",
             },
+            blocking=True,
+            return_response=True,
+        )
+
+
+async def test_invalid_config_entry(
+    hass: HomeAssistant,
+    mock_config_entry: MockConfigEntry,
+    mock_init_component,
+) -> None:
+    """Assert exception when invalid config entry is provided."""
+    service_data = {
+        "prompt": "Picture of a dog",
+        "config_entry": "invalid_entry",
+    }
+    with pytest.raises(
+        ServiceValidationError, match="Invalid config entry provided. Got invalid_entry"
+    ):
+        await hass.services.async_call(
+            "openai_conversation",
+            "generate_image",
+            service_data,
             blocking=True,
             return_response=True,
         )

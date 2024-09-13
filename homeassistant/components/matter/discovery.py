@@ -18,8 +18,11 @@ from .fan import DISCOVERY_SCHEMAS as FAN_SCHEMAS
 from .light import DISCOVERY_SCHEMAS as LIGHT_SCHEMAS
 from .lock import DISCOVERY_SCHEMAS as LOCK_SCHEMAS
 from .models import MatterDiscoverySchema, MatterEntityInfo
+from .number import DISCOVERY_SCHEMAS as NUMBER_SCHEMAS
+from .select import DISCOVERY_SCHEMAS as SELECT_SCHEMAS
 from .sensor import DISCOVERY_SCHEMAS as SENSOR_SCHEMAS
 from .switch import DISCOVERY_SCHEMAS as SWITCH_SCHEMAS
+from .update import DISCOVERY_SCHEMAS as UPDATE_SCHEMAS
 
 DISCOVERY_SCHEMAS: dict[Platform, list[MatterDiscoverySchema]] = {
     Platform.BINARY_SENSOR: BINARY_SENSOR_SCHEMAS,
@@ -29,14 +32,17 @@ DISCOVERY_SCHEMAS: dict[Platform, list[MatterDiscoverySchema]] = {
     Platform.FAN: FAN_SCHEMAS,
     Platform.LIGHT: LIGHT_SCHEMAS,
     Platform.LOCK: LOCK_SCHEMAS,
+    Platform.NUMBER: NUMBER_SCHEMAS,
+    Platform.SELECT: SELECT_SCHEMAS,
     Platform.SENSOR: SENSOR_SCHEMAS,
     Platform.SWITCH: SWITCH_SCHEMAS,
+    Platform.UPDATE: UPDATE_SCHEMAS,
 }
 SUPPORTED_PLATFORMS = tuple(DISCOVERY_SCHEMAS)
 
 
 @callback
-def iter_schemas() -> Generator[MatterDiscoverySchema, None, None]:
+def iter_schemas() -> Generator[MatterDiscoverySchema]:
     """Iterate over all available discovery schemas."""
     for platform_schemas in DISCOVERY_SCHEMAS.values():
         yield from platform_schemas
@@ -45,7 +51,7 @@ def iter_schemas() -> Generator[MatterDiscoverySchema, None, None]:
 @callback
 def async_discover_entities(
     endpoint: MatterEndpoint,
-) -> Generator[MatterEntityInfo, None, None]:
+) -> Generator[MatterEntityInfo]:
     """Run discovery on MatterEndpoint and return matching MatterEntityInfo(s)."""
     discovered_attributes: set[type[ClusterAttributeDescriptor]] = set()
     device_info = endpoint.device_info
